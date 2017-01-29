@@ -28,4 +28,4 @@ class DatabaseContext(object):
         self.Base.metadata.create_all(self.engine, checkfirst=True)
 
     def _bind_models(self):
-        pass
+

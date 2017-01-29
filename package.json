@@ -14,5 +14,9 @@
   "license": "GPL v3",
   "bugs": {
     "url": "https://github.com/stefankopieczek/goalistic/issues"
+  },
+  "dependencies": {
+    "react-dom": "~15.4.2",
+    "react": "~15.4.2"
   }
 }
