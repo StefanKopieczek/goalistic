@@ -4,7 +4,8 @@
   "description": "Web app for tracking food intake by weight, and helping users meet their weight loss goals.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
