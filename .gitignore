@@ -1,3 +1,5 @@
 *.pyc
 *.sw[op]
 *.db
+react-src/build/*
+!react-src/build/.gitkeep
