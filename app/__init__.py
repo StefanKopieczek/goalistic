@@ -5,7 +5,12 @@ import database
 
 app = Flask(__name__)
 db = database.DatabaseContext()
-set_up_test_schema()
+
+
+# Set up test schema
+bob = db.User(name='Bob', email='bob@example.com')
+bob.save()
+
 
 @app.route('/')
 def hello_world():
@@ -242,8 +247,3 @@ def string_to_date(date_str):
 
 def date_to_string(date):
     return ''  # TODO
-
-
-def set_up_test_schema():
-    bob = db.User(name='Bob', email='bob@example.com')
-    bob.save()
