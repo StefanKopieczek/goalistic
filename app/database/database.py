@@ -1,7 +1,8 @@
-from sqlalchemy import Table, Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Boolean, Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
+from types import MethodType
 
 DEVELOPMENT_DB = 'sqllite://dev.db'
 
@@ -14,7 +15,7 @@ class DatabaseContext(object):
         self._db_uri = db_uri
 
     def connect(self):
-        self.engine = create_engine(self.db_uri, echo=False)
+        self.engine = create_engine(self._db_uri, echo=False)
         self.session = scoped_session(sessionmaker(autocommit=False,
                                                    autoflush=False,
                                                    bind=self.engine))
@@ -22,6 +23,16 @@ class DatabaseContext(object):
         self.Base.query = self.session.query_property()
         self._bind_models()
         self._ensure_schema()
+        self._define_todict()
+
+    def _define_todict(self):
+        def _inner_todict(other):
+            d = {}
+            for prop in other.__class__._visible_attributes:
+                if hasattr(other, prop):
+                    d[prop] = getattr(other, prop)
+            return d
+        self.Base.to_dict = MethodType(_inner_todict, None, self.Base)
 
     def _ensure_schema(self):
         # Create any DB models that don't currently exist.
@@ -30,6 +41,7 @@ class DatabaseContext(object):
     def _bind_models(self):
         class User(self.Base):
             __tablename__ = 'users'
+            _visible_attributes = ['id', 'name', 'email']
             id = Column(Integer, primary_key=True)
             email = Column(String)
             name = Column(String)
@@ -40,6 +52,7 @@ class DatabaseContext(object):
 
         class Goal(self.Base):
             __tablename__ = 'goals'
+            _visible_attributes = ['id', 'user_id', 'start_ts', 'end_ts', 'warmup_period']
             id = Column(Integer, primary_key=True)
             user_id = Column(Integer, ForeignKey('user.id'))
             user = relationship('User', back_populates='goals')
@@ -51,7 +64,7 @@ class DatabaseContext(object):
         self.Goal = Goal
 
         class Measurement(self.Base):
-            __tablename__ == 'measurements'
+            __tablename__ = 'measurements'
             id = Column(Integer, primary_key=True)
             user_id = Column(Integer, ForeignKey('user.id'))
             user = relationship('User', back_populates='measurements')
@@ -61,7 +74,7 @@ class DatabaseContext(object):
         self.Measurement = Measurement
 
         class Meal(self.Base):
-            __tablename__ == 'meals'
+            __tablename__ = 'meals'
             id = Column(Integer, primary_key=True)
             user_id = Column(Integer, ForeignKey('user.id'))
             user = relationship('User', back_populates='meals')
