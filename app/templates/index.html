@@ -3,11 +3,13 @@
 <head>
 <title>Hello world!</title>
 <body>
-    <div class=page>
-        Hello world!
-    </div>
     <div id=container>
     </div>
+
     <script src='/static/js/bundle.js'></script>
+    <script>
+        // Load up the react tracker app and render it under the container div.
+        loadTracker('container');
+    </script>
 </body>
 </html>
